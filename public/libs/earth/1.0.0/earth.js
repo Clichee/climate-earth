@@ -245,6 +245,7 @@
     // Some hacky stuff to ensure only one download can be in progress at a time.
     var downloadsInProgress = 0;
 
+    //CLIMATE: Not sure what this does yet
     function buildGrids() {
         report.status("Downloading...");
         log.time("build grids");
@@ -362,6 +363,7 @@
         return "ready";
     }
 
+    //CLIMATE: Mask could be the colored layer on top of the globe, which we need to color
     function createMask(globe) {
         if (!globe) return null;
 
@@ -384,11 +386,14 @@
                 var i = (y * width + x) * 4;
                 return data[i + 3] > 0;  // non-zero alpha means pixel is visible
             },
-            set: function(x, y, rgba) {
+            
+            //CLIMATE: THIS IS IT!!! Changing those rgb values, changes the color of surface!
+            //Try to inject the the temp to color values of our own data next
+            set: function(x, y, rgba) {    
                 var i = (y * width + x) * 4;
-                data[i    ] = rgba[0];
-                data[i + 1] = rgba[1];
-                data[i + 2] = rgba[2];
+                data[i    ] = 255//rgba[0];
+                data[i + 1] = 105//rgba[1];
+                data[i + 2] = 180//rgba[2];
                 data[i + 3] = rgba[3];
                 return this;
             }
@@ -509,7 +514,7 @@
                         }
                     }
                     column[y+1] = column[y] = wind || HOLE_VECTOR;
-                    mask.set(x, y, color).set(x+1, y, color).set(x, y+1, color).set(x+1, y+1, color);
+                    mask.set(x, y, color).set(x+1, y, color).set(x, y+1, color).set(x+1, y+1, color); // CLIMATE: could be the function to color the grids
                 }
             }
             columns[x+1] = columns[x] = column;
@@ -639,6 +644,7 @@
         })();
     }
 
+    //CLIMATE: Show Grid option
     function drawGridPoints(ctx, grid, globe) {
         if (!grid || !globe || !configuration.get("showGridPoints")) return;
 
@@ -656,7 +662,8 @@
         });
     }
 
-    function drawOverlay(field, overlayType) {
+    //CLIMATE: Probably not for coloring the grids, but the settings interface
+    function drawOverlay(field, overlayType) { 
         if (!field) return;
 
         var ctx = d3.select("#overlay").node().getContext("2d"), grid = (gridAgent.value() || {}).overlayGrid;
@@ -667,7 +674,7 @@
             if (overlayType !== "off") {
                 ctx.putImageData(field.overlay, 0, 0);
             }
-            drawGridPoints(ctx, grid, globeAgent.value());
+            drawGridPoints(ctx, grid, globeAgent.value()); //CLIMATE: Option to show grid, not coloring
         }
 
         if (grid) {
