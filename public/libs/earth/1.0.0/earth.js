@@ -389,17 +389,21 @@
             
             //CLIMATE: THIS IS IT!!! Changing those rgb values, changes the color of surface!
             //Try to inject the the temp to color values of our own data next
+            //Setting colors to random reveas that there are A LOT of grids, probably more precise to say that it's actually coloring every pixel
+            //It's way more pixels than available on my data
+            //Regarding alpha: Since this is a mask on top of the globe, if alpha is 255, the map won't be visible. Setting it to something in between seems fitting
             set: function(x, y, rgba) {    
                 var i = (y * width + x) * 4;
-                data[i    ] = 255//rgba[0];
-                data[i + 1] = 105//rgba[1];
-                data[i + 2] = 180//rgba[2];
-                data[i + 3] = rgba[3];
+                data[i    ] = Math.floor(Math.random() * 256);//rgba[0];
+                data[i + 1] = Math.floor(Math.random() * 256);//rgba[1];
+                data[i + 2] = Math.floor(Math.random() * 256);//rgba[2];
+                data[i + 3] = 100//rgba[3]; 
                 return this;
             }
         };
     }
 
+    //CLIMATE: May be wind vectors related stuff only (not sure)
     function createField(columns, bounds, mask) {
 
         /**
@@ -465,6 +469,7 @@
         return wind;
     }
 
+    //CLIMATE: We don't really want to interpolate, but it may be necessary. Leave it for now
     function interpolateField(globe, grids) {
         if (!globe || !grids) return null;
 
