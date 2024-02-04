@@ -14,7 +14,7 @@ var products = function() {
     var catalogs = {
         // The OSCAR catalog is an array of file names, sorted and prefixed with yyyyMMdd. Last item is the
         // most recent. For example: [ 20140101-abc.json, 20140106-abc.json, 20140112-abc.json, ... ]
-        oscar: µ.loadJson([OSCAR_PATH, "catalog.json"].join("/"))
+        oscar: µ.loadJson([OSCAR_PATH, "_catalog.json"].join("/"))
     };
 
     function buildProduct(overrides) {
@@ -44,7 +44,7 @@ var products = function() {
     function gfs1p0degPath(attr, type, surface, level) {
         var dir = attr.date, stamp = dir === "current" ? "current" : attr.hour;
         var file = [stamp, type, surface, level, "gfs", "1.0"].filter(µ.isValue).join("-") + ".json";
-        return [WEATHER_PATH, dir, file].join("/");
+        return [WEATHER_PATH, dir, "20200630-surfAirTemp_WindCopy.json"].join("/");
     }
 
     function gfsDate(attr) {
