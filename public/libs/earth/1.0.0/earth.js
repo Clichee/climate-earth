@@ -377,6 +377,7 @@
         context.fill();
         // d3.select("#display").node().appendChild(canvas);  // make mask visible for debugging
 
+
         var imageData = context.getImageData(0, 0, width, height);
         var data = imageData.data;  // layout: [r, g, b, a, r, g, b, a, ...]
         log.timeEnd("render mask");
@@ -394,9 +395,9 @@
             //Regarding alpha: Since this is a mask on top of the globe, if alpha is 255, the map won't be visible. Setting it to something in between seems fitting
             set: function(x, y, rgba) {    
                 var i = (y * width + x) * 4;
-                data[i    ] = Math.floor(Math.random() * 256);//rgba[0];
-                data[i + 1] = Math.floor(Math.random() * 256);//rgba[1];
-                data[i + 2] = Math.floor(Math.random() * 256);//rgba[2];
+                data[i    ] = /*Math.floor(Math.random() * 256);*/rgba[0];
+                data[i + 1] = /*Math.floor(Math.random() * 256);*/rgba[1];
+                data[i + 2] = /*Math.floor(Math.random() * 256);*/rgba[2];
                 data[i + 3] = 100//rgba[3]; 
                 return this;
             }
