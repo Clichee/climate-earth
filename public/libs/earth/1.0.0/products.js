@@ -632,7 +632,8 @@ var products = function() {
 
         function interpolate(λ, φ) {
             var i = µ.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
-            var j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
+            var j = -1 * (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
+            console.log("j: " + j + ", φ: " + φ + ", φ0: " + φ0 + ", Δφ: " + Δφ);
 
             //         1      2           After converting λ and φ to fractional grid indexes i and j, we find the
             //        fi  i   ci          four points "G" that enclose point (i, j). These points are at the four
