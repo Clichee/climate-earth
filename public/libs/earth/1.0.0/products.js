@@ -618,6 +618,8 @@ var products = function() {
         var lo1 = header.lo1; var la1 = header.la1; 
         var lo2 = header.lo2; var la2 = header.la2;
 
+        var lonBelowZero = (lo1 < 0);
+
         // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
         // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
         var grid = [], p = 0;
@@ -629,8 +631,13 @@ var products = function() {
                 //CLIMATE: But it still renders and interpolates the entire globe, only with 0 Kelvin values
                 var currentLon = i*Δλ + defaultLo1;
                 var currentLat = j*Δφ + defaultLa1;
-                
-                if (currentLon < lo2 && currentLon > lo1 && currentLat < la2 && currentLat > la1) {
+
+                var isInLatBoundary = currentLat < la2 && currentLat > la1;
+                var isInLonBoundary = false;
+                if(lonBelowZero) { isInLonBoundary = (currentLon > (360 + lo1) && currentLon < 360) || (currentLon > -1 && currentLon < lo2); }
+                else { isInLonBoundary = currentLon < lo2 && currentLon > lo1; }
+
+                if (isInLatBoundary && isInLonBoundary) {
                     row[i] = builder.data(p);
                 } else {
                     row[i] = 0;
