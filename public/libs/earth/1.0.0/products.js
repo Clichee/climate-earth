@@ -613,6 +613,7 @@ var products = function() {
         var ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)
         var date = new Date(header.refTime);
         date.setHours(date.getHours() + header.forecastTime);
+        var lo2 = header.lo2; var la2 = header.la2; 
 
         // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
         // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
@@ -621,7 +622,12 @@ var products = function() {
         for (var j = 0; j < nj; j++) {
             var row = [];
             for (var i = 0; i < ni; i++, p++) {
-                row[i] = builder.data(p);
+
+                if (la2 > j*Δφ + φ0 && lo2 > i*Δλ + λ0) {
+                    row[i] = builder.data(p);
+                } else {
+                    row[i] = 0;
+                }
             }
             if (isContinuous) {
                 // For wrapped grids, duplicate first column as last column to simplify interpolation logic
@@ -632,7 +638,7 @@ var products = function() {
 
         function interpolate(λ, φ) {
             var i = µ.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
-            var j = -1 * (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
+            var j = -1 * (φ0 - φ) / Δφ;            // calculate latitude index in direction +90 to -90
 
             //         1      2           After converting λ and φ to fractional grid indexes i and j, we find the
             //        fi  i   ci          four points "G" that enclose point (i, j). These points are at the four
