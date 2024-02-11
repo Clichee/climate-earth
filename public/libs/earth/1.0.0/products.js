@@ -606,14 +606,17 @@ var products = function() {
      */
     function buildGrid(builder) {
         // var builder = createBuilder(data);
+        var defaultLo1 = 0; var defaultLa1 = -90; //CLIMATE: Default values for origin points
 
         var header = builder.header;
-        var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
+        var λ0 = defaultLo1, φ0 = defaultLa1;  // the grid's origin (e.g., 0.0E, 90.0N)
         var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
         var ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)
         var date = new Date(header.refTime);
         date.setHours(date.getHours() + header.forecastTime);
-        var lo2 = header.lo2; var la2 = header.la2; 
+        
+        var lo1 = header.lo1; var la1 = header.la1; 
+        var lo2 = header.lo2; var la2 = header.la2;
 
         // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
         // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
@@ -622,12 +625,17 @@ var products = function() {
         for (var j = 0; j < nj; j++) {
             var row = [];
             for (var i = 0; i < ni; i++, p++) {
-
-                if (la2 > j*Δφ + φ0 && lo2 > i*Δλ + λ0) {
+                //CLIMATE: Modified it so it only reads the correct data when it's in the boundaries of lo1,lo2,la1,la2
+                //CLIMATE: But it still renders and interpolates the entire globe, only with 0 Kelvin values
+                var currentLon = i*Δλ + defaultLo1;
+                var currentLat = j*Δφ + defaultLa1;
+                
+                if (currentLon < lo2 && currentLon > lo1 && currentLat < la2 && currentLat > la1) {
                     row[i] = builder.data(p);
                 } else {
                     row[i] = 0;
                 }
+                // console.log("Current Latitude: " + currentLat + ", Current Longitude: " + currentLon + ", Temp: " + row[i]);
             }
             if (isContinuous) {
                 // For wrapped grids, duplicate first column as last column to simplify interpolation logic
@@ -638,8 +646,8 @@ var products = function() {
 
         function interpolate(λ, φ) {
             var i = µ.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
-            var j = -1 * (φ0 - φ) / Δφ;            // calculate latitude index in direction +90 to -90
-
+            var j = -1 * (φ0 - φ) / Δφ;            // calculate latitude index in direction +90 to -90 //CLIMATE: Changed it to -90 to +90 by inverting it    
+            
             //         1      2           After converting λ and φ to fractional grid indexes i and j, we find the
             //        fi  i   ci          four points "G" that enclose point (i, j). These points are at the four
             //         | =1.4 |           corners specified by the floor and ceiling of i and j. For example, given
