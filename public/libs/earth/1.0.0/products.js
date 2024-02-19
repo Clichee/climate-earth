@@ -642,6 +642,7 @@ var products = function() {
                 } else {
                     row[i] = 0;
                 }
+                //row[i] = builder.data(p);
                 // console.log("Current Latitude: " + currentLat + ", Current Longitude: " + currentLon + ", Temp: " + row[i]);
             }
             if (isContinuous) {
@@ -692,7 +693,22 @@ var products = function() {
                 for (var j = 0; j < nj; j++) {
                     var row = grid[j] || [];
                     for (var i = 0; i < ni; i++) {
-                        cb(µ.floorMod(180 + λ0 + i * Δλ, 360) - 180, φ0 - j * Δφ, row[i]);
+                        // var currentLon = i*Δλ + defaultLo1;
+                        // var currentLat = j*Δφ + defaultLa1;
+                        // var isInLatBoundary = currentLat < la2 && currentLat > la1;
+                        // var isInLonBoundary = false;
+                        // if(lonBelowZero) { isInLonBoundary = (currentLon > (360 + lo1) && currentLon < 360) || (currentLon > -1 && currentLon < lo2); }
+                        // else { isInLonBoundary = currentLon < lo2 && currentLon > lo1; }
+
+                        // if(isInLatBoundary && isInLonBoundary){                            
+                        //     cb(-1 * µ.floorMod(180 + λ0 + i * Δλ, 360) - 180, φ0 - j * Δφ, row[i]);
+                        // }
+                        var rescaleLat = Math.abs(la2 - la1)/180;
+                        var rescaleLon = Math.abs(lo2 - lo1);
+
+                        // Keep in mind that setting la2 as the starting point would mean that in case of a normal rendering,
+                        // it would start with 90 instead of -90. Watch out for bugs!
+                        cb(µ.floorMod(180 + λ0 + i * Δλ, 360) - 180, la2 - j * Δφ * rescaleLat, row[i]);
                     }
                 }
             }
