@@ -44,7 +44,10 @@ var products = function() {
     function gfs1p0degPath(attr, type, surface, level) {
         var dir = attr.date, stamp = dir === "current" ? "current" : attr.hour;
         var file = [stamp, type, surface, level, "gfs", "1.0"].filter(µ.isValue).join("-") + ".json";
-        return [WEATHER_PATH, dir, "_20200630-surfAirTemp_WindCopy.json"].join("/");
+        if(stamp == "current") {
+            return [WEATHER_PATH, dir, "_20200630-surfAirTemp_WindCopy.json"].join("/");
+        }
+        return "http://127.0.0.1:8000/cmip/" + attr.date;
     }
 
     function gfsDate(attr) {
@@ -606,9 +609,10 @@ var products = function() {
      */
     function buildGrid(builder) {
         // var builder = createBuilder(data);
-        var defaultLo1 = 0; var defaultLa1 = -90; //CLIMATE: Default values for origin points
 
         var header = builder.header;
+        
+        var defaultLo1 = 0; var defaultLa1 = -90; //CLIMATE: Default values for origin points (Lo1: 0, La1: -90)
         var λ0 = defaultLo1, φ0 = defaultLa1;  // the grid's origin (e.g., 0.0E, 90.0N)
         var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
         var ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)
@@ -632,17 +636,17 @@ var products = function() {
                 var currentLon = i*Δλ + defaultLo1;
                 var currentLat = j*Δφ + defaultLa1;
 
-                var isInLatBoundary = currentLat < la2 && currentLat > la1;
-                var isInLonBoundary = false;
-                if(lonBelowZero) { isInLonBoundary = (currentLon > (360 + lo1) && currentLon < 360) || (currentLon > -1 && currentLon < lo2); }
-                else { isInLonBoundary = currentLon < lo2 && currentLon > lo1; }
+                // var isInLatBoundary = currentLat < la2 && currentLat > la1;
+                // var isInLonBoundary = false;
+                // if(lonBelowZero) { isInLonBoundary = (currentLon > (360 + lo1) && currentLon < 360) || (currentLon > -1 && currentLon < lo2); }
+                // else { isInLonBoundary = currentLon < lo2 && currentLon > lo1; }
 
-                if (isInLatBoundary && isInLonBoundary) {
-                    row[i] = builder.data(p);
-                } else {
-                    row[i] = 0;
-                }
-                //row[i] = builder.data(p);
+                // if (isInLatBoundary && isInLonBoundary) {
+                //     row[i] = builder.data(p);
+                // } else {
+                //     row[i] = 0;
+                // }
+                row[i] = builder.data(p);
                 // console.log("Current Latitude: " + currentLat + ", Current Longitude: " + currentLon + ", Temp: " + row[i]);
             }
             if (isContinuous) {
@@ -692,23 +696,14 @@ var products = function() {
             forEachPoint: function(cb) {
                 for (var j = 0; j < nj; j++) {
                     var row = grid[j] || [];
-                    for (var i = 0; i < ni; i++) {
-                        // var currentLon = i*Δλ + defaultLo1;
-                        // var currentLat = j*Δφ + defaultLa1;
-                        // var isInLatBoundary = currentLat < la2 && currentLat > la1;
-                        // var isInLonBoundary = false;
-                        // if(lonBelowZero) { isInLonBoundary = (currentLon > (360 + lo1) && currentLon < 360) || (currentLon > -1 && currentLon < lo2); }
-                        // else { isInLonBoundary = currentLon < lo2 && currentLon > lo1; }
-
-                        // if(isInLatBoundary && isInLonBoundary){                            
-                        //     cb(-1 * µ.floorMod(180 + λ0 + i * Δλ, 360) - 180, φ0 - j * Δφ, row[i]);
-                        // }
+                    for (var i = 0; i < ni; i++) {                
                         var rescaleLat = Math.abs(la2 - la1)/180;
                         var rescaleLon = Math.abs(lo2 - lo1);
 
                         // Keep in mind that setting la2 as the starting point would mean that in case of a normal rendering,
                         // it would start with 90 instead of -90. Watch out for bugs!
-                        cb(µ.floorMod(180 + λ0 + i * Δλ, 360) - 180, la2 - j * Δφ * rescaleLat, row[i]);
+                        //cb(µ.floorMod(lo2 + λ0 + i * Δλ, 360) - lo1, la2 - j * Δφ * rescaleLat, row[i]);
+                        cb(µ.floorMod(180 + λ0 + i * Δλ, 360) - 180, φ0 - j * Δφ, row[i]);
                     }
                 }
             }
