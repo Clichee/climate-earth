@@ -306,3 +306,9 @@ body {
 #closing {
     padding-bottom: 2.5rem;
 }
+
+/* CLIMATE from here on */
+
+.input-date {
+    color-scheme: dark;
+}
