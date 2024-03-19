@@ -288,7 +288,6 @@
      * ~ CLIMATE
      */
     function navigateToDate() {
-        console.log("Changing date...");
         var date = d3.select("#input-date").node().value;
         if (downloadsInProgress > 0) {
             log.debug("Download in progress--ignoring nav request.");
@@ -297,7 +296,7 @@
         var next = new Date(date);
 
         //CLIMATE: Change hours depending on source, so it reloads the projection
-        // It will not reload, if the datetime hasn't been changed
+        //It will not reload, if the datetime hasn't been changed
         if(currentSource == "local") {
             next.setHours(1, 0, 0);
         } else if(currentSource == "cmip6") {
@@ -306,7 +305,6 @@
         
         if (next) {
             configuration.save(µ.dateToConfig(next));
-            console.log("Date changed!");
         }
     }
 
