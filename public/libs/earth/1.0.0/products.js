@@ -6,8 +6,13 @@
  *
  * https://github.com/cambecc/earth
  */
+
+//CLIMATE: Gloabl source string for the currently used data source
+var currentSource = "local";
+
 var products = function() {
     "use strict";
+
 
     var WEATHER_PATH = "/data/weather";
     var OSCAR_PATH = "/data/oscar";
@@ -44,10 +49,18 @@ var products = function() {
     function gfs1p0degPath(attr, type, surface, level) {
         var dir = attr.date, stamp = dir === "current" ? "current" : attr.hour;
         var file = [stamp, type, surface, level, "gfs", "1.0"].filter(µ.isValue).join("-") + ".json";
+        
+        console.log(currentSource);
+        
         if(stamp == "current") {
             return [WEATHER_PATH, dir, "_20200630-surfAirTemp_WindCopy.json"].join("/");
+        } else if(currentSource == "local") {
+            return [WEATHER_PATH, "surfAirTemp_" + attr.date.replaceAll("/", "-") + ".json"].join("/");
+        } else if(currentSource == "cmip6") {
+            return "http://127.0.0.1:8000/cmip/" + attr.date;
+        } else {
+            return [WEATHER_PATH, "current/_20200630-surfAirTemp_WindCopy.json"].join("/");
         }
-        return "http://127.0.0.1:8000/cmip/" + attr.date;
     }
 
     function gfsDate(attr) {

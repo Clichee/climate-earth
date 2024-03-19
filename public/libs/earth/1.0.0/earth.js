@@ -34,6 +34,8 @@
     var view = µ.view();
     var log = µ.log();
 
+    
+
     /**
      * An object to display various types of messages to the user.
      */
@@ -286,16 +288,41 @@
      * ~ CLIMATE
      */
     function navigateToDate() {
+        console.log("Changing date...");
         var date = d3.select("#input-date").node().value;
         if (downloadsInProgress > 0) {
             log.debug("Download in progress--ignoring nav request.");
             return;
         }
         var next = new Date(date);
+
+        //CLIMATE: Change hours depending on source, so it reloads the projection
+        // It will not reload, if the datetime hasn't been changed
+        if(currentSource == "local") {
+            next.setHours(1, 0, 0);
+        } else if(currentSource == "cmip6") {
+            next.setHours(2, 0, 0);
+        }
+        
         if (next) {
             configuration.save(µ.dateToConfig(next));
+            console.log("Date changed!");
         }
     }
+
+    //CLIMATE:
+    /**
+     * Change the data source to the given one and reload the projection
+     * 
+     * @param {string} source is the data source name
+     */
+    function changeDataSource(source) {
+        if(currentSource == source) return;
+
+        currentSource = source;
+        navigateToDate();
+    }
+
 
     function buildRenderer(mesh, globe) {
         if (!mesh || !globe) return null;
@@ -1102,6 +1129,10 @@
             d3.select("#overlay-air_density").classed("disabled", s === "surface");
             d3.select("#overlay-wind_power_density").classed("disabled", s === "surface");
         });
+
+        //CLIMATE: Add event handlers for source buttons
+        d3.select("#source-local").on("click", changeDataSource.bind(null, "local"));
+        d3.select("#source-cmip6").on("click", changeDataSource.bind(null, "cmip6"));
 
         // Add event handlers for the time navigation buttons.
         d3.select("#nav-backward-more").on("click", navigate.bind(null, -10));
