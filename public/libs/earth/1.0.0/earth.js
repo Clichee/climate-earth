@@ -268,14 +268,12 @@
      * Modifies the configuration to navigate to the chronologically next or previous data layer.
      */
     function navigate(step) {
-        console.log(step);
         if (downloadsInProgress > 0) {
             log.debug("Download in progress--ignoring nav request.");
             return;
         }
         var next = gridAgent.value().primaryGrid.navigate(step);
         if (next) {
-            console.log(next);
             configuration.save(µ.dateToConfig(next));
         }
     }
@@ -1106,7 +1104,6 @@
         });
 
         // Add event handlers for the time navigation buttons.
-        //CLIMATE: Maybe remove forward/backward-more, since they cause crashing
         d3.select("#nav-backward-more").on("click", navigate.bind(null, -10));
         d3.select("#nav-forward-more" ).on("click", navigate.bind(null, +10));
         d3.select("#go-to-date"       ).on("click", navigateToDate.bind(null)); //CLIMATE: New button to navigate to the entered date
