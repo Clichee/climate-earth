@@ -222,12 +222,20 @@
             var coastHi = topojson.feature(topo, µ.isMobile() ? o.coastline_110m : o.coastline_50m);
             var lakesLo = topojson.feature(topo, µ.isMobile() ? o.lakes_tiny : o.lakes_110m);
             var lakesHi = topojson.feature(topo, µ.isMobile() ? o.lakes_110m : o.lakes_50m);
+            var boundariesLo = topojson.feature(topo, µ.isMobile() ? o.boundaries_50m : o.boundaries_110m);
+            var boundariesHi = topojson.feature(topo, µ.isMobile() ? o.boundaries_110m : o.boundaries_50m);
+            // var labelLo = topojson.feature(topo, µ.isMobile() ? o.label_50m : o.label_110m);
+            // var labelHi = topojson.feature(topo, µ.isMobile() ? o.label_110m : o.label_50m);
             log.timeEnd("building meshes");
             return {
                 coastLo: coastLo,
                 coastHi: coastHi,
                 lakesLo: lakesLo,
-                lakesHi: lakesHi
+                lakesHi: lakesHi,
+                boundariesLo: boundariesLo,
+                boundariesHi: boundariesHi,
+                // labelLo: labelLo,
+                // labelHi: labelHi,
             };
         });
     }
@@ -344,6 +352,8 @@
         var path = d3.geo.path().projection(globe.projection).pointRadius(7);
         var coastline = d3.select(".coastline");
         var lakes = d3.select(".lakes");
+        var boundaries = d3.select(".boundaries"); //CSS class, settings for strokes
+        // var label = d3.select(".label");
         d3.selectAll("path").attr("d", path);  // do an initial draw -- fixes issue with safari
 
         function drawLocationMark(point, coord) {
@@ -383,6 +393,8 @@
                 moveStart: function() {
                     coastline.datum(mesh.coastLo);
                     lakes.datum(mesh.lakesLo);
+                    boundaries.datum(mesh.boundariesLo);
+                    // label.datum(mesh.labelLo);
                     rendererAgent.trigger("start");
                 },
                 move: function() {
@@ -391,6 +403,8 @@
                 moveEnd: function() {
                     coastline.datum(mesh.coastHi);
                     lakes.datum(mesh.lakesHi);
+                    boundaries.datum(mesh.boundariesHi);
+                    // label.datum(mesh.labelHi);
                     d3.selectAll("path").attr("d", path);
                     rendererAgent.trigger("render");
                 },

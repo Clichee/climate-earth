@@ -203,13 +203,19 @@ body {
  * SVG Element Styling
  **************************************************************************************************/
 
-.coastline, .lakes {
+.coastline, .lakes, .boundaries {
     stroke: #ffffff;
     stroke-width: 1.25;
     fill: none;
 }
 
-.firefox .coastline, .firefox .lakes {
+/* .labels {
+    fill: #ffffff;
+    font-family:arial;
+    font-size:0.7em;
+} */
+
+.firefox .coastline, .firefox .lakes, .firefox .boundaries {
     stroke-width: 1.0;
 }
 
