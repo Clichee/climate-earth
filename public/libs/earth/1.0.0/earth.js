@@ -329,6 +329,19 @@
         navigateToDate();
     }
 
+    /**
+     * 
+     * 
+     * @param {string} selectedOverlay, string of the overlay to activate
+     */
+    function changeOverlay(selectedOverlay) {
+        if(currentOverlay == "temp") return;
+
+        currentOverlay = selectedOverlay;
+        console.log(currentOverlay);
+        //navigateToDate();
+    }
+
 
     function buildRenderer(mesh, globe) {
         if (!mesh || !globe) return null;
@@ -708,7 +721,7 @@
         })();
     }
 
-    //CLIMATE: Show Grid option
+    //CLIMATE: Show Grid option functionality
     function drawGridPoints(ctx, grid, globe) {
         if (!grid || !globe || !configuration.get("showGridPoints")) return;
 
@@ -726,7 +739,7 @@
         });
     }
 
-    //CLIMATE: Probably not for coloring the grids, but the settings interface
+
     function drawOverlay(field, overlayType) { 
         if (!field) return;
 
@@ -1010,6 +1023,11 @@
             }
             // Build a new grid if the new overlay type is different from the current one.
             var overlayType = configuration.get("overlayType") || "default";
+            
+            //CLIMATE: Change currentOverlay to selected overlay for data selection in products.js
+            currentOverlay = overlayType;
+            console.log("Overlay changed: " + currentOverlay);
+
             if (_.indexOf(changed, "overlayType") >= 0 && overlayType !== "off") {
                 var grids = (gridAgent.value() || {}), primary = grids.primaryGrid, overlay = grids.overlayGrid;
                 if (!overlay) {

@@ -7,8 +7,9 @@
  * https://github.com/cambecc/earth
  */
 
-//CLIMATE: Gloabl source string for the currently used data source
+//CLIMATE: Gloabl source string for the currently used data source and overlay
 var currentSource = "local";
+var currentOverlay = "default";
 
 var products = function() {
     "use strict";
@@ -49,8 +50,11 @@ var products = function() {
     function gfs1p0degPath(attr, type, surface, level) {
         var dir = attr.date, stamp = dir === "current" ? "current" : attr.hour;
         var file = [stamp, type, surface, level, "gfs", "1.0"].filter(µ.isValue).join("-") + ".json";
-        
-        
+
+        if(currentOverlay == "default") {
+            return [WEATHER_PATH, dir, "current-wind-surface-level-gfs-1.0.json"].join("/");
+        }
+
         if(stamp == "current") {
             return [WEATHER_PATH, dir, "_20200630-surfAirTemp_WindCopy.json"].join("/");
         } else if(currentSource == "local") {
