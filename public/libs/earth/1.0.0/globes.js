@@ -187,6 +187,10 @@ var globes = function() {
                     .attr("class", "coastline");
                 mapSvg.append("path")
                     .attr("class", "lakes");
+                mapSvg.append("path")
+                    .attr("class", "boundaries");
+                // mapSvg.append("text")
+                //     .attr("class", "label");
                 foregroundSvg.append("use")
                     .attr("xlink:href", "#sphere")
                     .attr("class", "foreground-sphere");
@@ -270,7 +274,11 @@ var globes = function() {
                 mapSvg.append("path")
                     .attr("class", "coastline");
                 mapSvg.append("path")
-                    .attr("class", "lakes");
+                    .classed("label", true);
+                mapSvg.append("path")
+                    .attr("class", "boundaries");
+                // mapSvg.append("text")
+                //     .attr("class", "label");
                 foregroundSvg.append("use")
                     .attr("xlink:href", "#sphere")
                     .attr("class", "foreground-sphere");
