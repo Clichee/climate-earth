@@ -17,6 +17,11 @@ var products = function() {
 
     var WEATHER_PATH = "/data/weather";
     var OSCAR_PATH = "/data/oscar";
+    
+    //CLIMATE: Specifc paths for local temp and wind data
+    var TEMP_PATH = WEATHER_PATH + "/temp";
+    var WIND_PATH = WEATHER_PATH + "/wind";  
+
     var catalogs = {
         // The OSCAR catalog is an array of file names, sorted and prefixed with yyyyMMdd. Last item is the
         // most recent. For example: [ 20140101-abc.json, 20140106-abc.json, 20140112-abc.json, ... ]
@@ -51,14 +56,20 @@ var products = function() {
         var dir = attr.date, stamp = dir === "current" ? "current" : attr.hour;
         var file = [stamp, type, surface, level, "gfs", "1.0"].filter(µ.isValue).join("-") + ".json";
 
+        //CLIMATE: Local wind data selection
         if(currentOverlay == "default") {
-            return [WEATHER_PATH, dir, "current-wind-surface-level-gfs-1.0.json"].join("/");
+            if(stamp != "current") {
+                return [WIND_PATH, "wind_" + attr.date.replaceAll("/", "-") + ".json"].join("/");
+            } else {
+                return [WEATHER_PATH, "current/current-wind-surface-level-gfs-1.0.json"].join("/");
+            }
         }
 
+        //CLIMATE: Temp data selection, local or cmip6 server
         if(stamp == "current") {
-            return [WEATHER_PATH, dir, "_20200630-surfAirTemp_WindCopy.json"].join("/");
+            return [TEMP_PATH, dir, "_20200630-surfAirTemp_WindCopy.json"].join("/");
         } else if(currentSource == "local") {
-            return [WEATHER_PATH, "surfAirTemp_" + attr.date.replaceAll("/", "-") + ".json"].join("/");
+            return [TEMP_PATH, "surfAirTemp_" + attr.date.replaceAll("/", "-") + ".json"].join("/");
         } else if(currentSource == "cmip6") {
             return "http://127.0.0.1:8000/cmip/" + attr.date;
         } else {
