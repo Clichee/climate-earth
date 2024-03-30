@@ -16,11 +16,11 @@ building and launching
 
 After installing node.js and npm, clone "earth" and install dependencies:
 
-    git clone https://github.com/cambecc/earth
+    git clone https://github.com/cambecc/earth --recursive
     cd earth
     npm install
 
-Next, launch the development web server:
+Development web server can be launched by running the runner script called `run_{yourOS}` or can be launched manually using:
 
     node dev-server.js 8080
 
@@ -34,6 +34,48 @@ for the main entry points. Data files are located in the `public/data` directory
 weather layer located at `data/weather/current`.
 
 *For Ubuntu, Mint, and elementary OS, use `nodejs` instead of `node` instead due to a [naming conflict](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os).
+
+getting climate data
+--------------------
+
+### CMIP6 data
+Climate data can be automatically fetched, while using the web app if the backend server (submodule) is also running and the preferred source is `CMIP6`.
+Simply selecting a date and pressing `GO!`, will fetch the climate data from the `CMIP6` servers.
+
+### Local data
+If you want to use your own climate or wind data, simply put the JSON files in the `public/data/weather/temp` / `public/data/weather/wind` directories.
+The climate data has the filename format: `surfAirTemp_YYYY-MM-DD.json`.
+The wind data has the filename format: `wind_YYYY-MM-DD.json`.
+
+### JSON format 
+The climate and wind data have specific JSON format. Please take a look at the sample files left in the directory for local data.
+The variables can be explained as the following:
+1. **refTime** Refers to the datetime of the data in format yyyy-mm-
+   ddThh:mm.SSSZ    
+   The ’T’ and ’Z’ are no placeholders and the time can be set to whatever,
+   since the data is a collection over an entire day
+2. **forecastTime** Is an offset for the hours, which is also irrelevant and can
+be set to 0
+3. **parameterNumber** The amount of parameters. Will stay 1, since it
+only has 1 data array
+4. **parameterUnit** Unit of the data (K, °C or °F)
+5. **nx** Grids in X-Axis. Size of lon array
+6. **ny** Grids in Y-Axis. Size of lat array
+7. **lo1** Rendering starting point on longitude (optional)
+8. **la1** Rendering starting point on latitude (optional)
+9. **lo2** Rendering end point on longitude. Without function, but may be
+used in the future (optional)
+10. **la2** Rendering end point on latitude. Without function, but may be used
+in the future (optional)
+11. **dx** Step size on the X-Axis. Step size of longitude.
+12. **dy** Step size on the Y-Axis. Step size of latitude.
+13. **data** Array with the temp/tasmax data. Is
+of size: nx · ny
+
+`lo1`, `la1`, `lo2` and `la2` are currently not used in this project and can therefore be left out. May change in the future.
+
+Climate and wind data have both 2 header and data entries, but in case of the climate data, the second ones will be left empty (but should not be deleted!).
+In case of wind data: First entry represents `U` vector, second represents `V` vector of the data. 
 
 getting map data
 ----------------
