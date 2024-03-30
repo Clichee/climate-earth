@@ -38,7 +38,9 @@ Keep in mind, that if you want to use the CMIP6 servers, it is required to do th
 
 ### Local data
 If you want to use your own climate or wind data, simply put the JSON files in the `public/data/weather/temp` / `public/data/weather/wind` directories.
+
 The climate data has the filename format: `surfAirTemp_YYYY-MM-DD.json`.
+
 The wind data has the filename format: `wind_YYYY-MM-DD.json`.
 
 ### JSON format 
