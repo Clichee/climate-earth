@@ -1,26 +1,20 @@
-earth
-=====
+climate-earth
+=============
 
-**NOTE: the location of `dev-server.js` has changed from `{repository}/server/` to `{repository}/`**
-
-"earth" is a project to visualize global weather conditions.
-
-A customized instance of "earth" is available at http://earth.nullschool.net.
-
-"earth" is a personal project I've used to learn javascript and browser programming, and is based on the earlier
-[Tokyo Wind Map](https://github.com/cambecc/air) project.  Feedback and contributions are welcome! ...especially
-those that clarify accepted best practices.
+Climate-earth project is a fork of Cameron Beccarios earth project and is developed as a Bachelor-Thesis to visualize climate data, based on the data published by [ECMWF](https://cds.climate.copernicus.eu/cdsapp#!/dataset/projections-cmip6?tab=overview).
 
 building and launching
 ----------------------
 
-After installing node.js and npm, clone "earth" and install dependencies:
+After installing node.js and npm, clone "climate-earth" and install dependencies (`--recursive` can be left out if CMIP6 is not used):
 
-    git clone https://github.com/cambecc/earth --recursive
-    cd earth
+    git clone https://github.com/ClimatePDE/climate-earth --recursive
+    cd climate-earth
     npm install
 
-Development web server can be launched by running the runner script called `run_{yourOS}` or can be launched manually using:
+Development web server can be launched by running the runner script called `run_{yourOS}` (`run_only_webapp_{yourOS}` if CMIP6 is not used). 
+
+Or can be launched manually using:
 
     node dev-server.js 8080
 
@@ -30,8 +24,7 @@ Finally, point your browser to:
 
 The server acts as a stand-in for static S3 bucket hosting and so contains almost no server-side logic. It
 serves all files located in the `earth/public` directory. See `public/index.html` and `public/libs/earth/*.js`
-for the main entry points. Data files are located in the `public/data` directory, and there is one sample
-weather layer located at `data/weather/current`.
+for the main entry points. Data files are located in the `public/data` directory.
 
 *For Ubuntu, Mint, and elementary OS, use `nodejs` instead of `node` instead due to a [naming conflict](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os).
 
@@ -41,6 +34,7 @@ getting climate data
 ### CMIP6 data
 Climate data can be automatically fetched, while using the web app if the backend server (submodule) is also running and the preferred source is `CMIP6`.
 Simply selecting a date and pressing `GO!`, will fetch the climate data from the `CMIP6` servers.
+Keep in mind, that if you want to use the CMIP6 servers, it is required to do the first step of their [How to use the CDS API](https://cds.climate.copernicus.eu/api-how-to). This will require an account on their website.
 
 ### Local data
 If you want to use your own climate or wind data, simply put the JSON files in the `public/data/weather/temp` / `public/data/weather/wind` directories.
@@ -86,10 +80,12 @@ simplified, larger scale for animation and a more detailed, smaller scale for st
 [GDAL](http://www.gdal.org/) and TopoJSON (see [here](http://bost.ocks.org/mike/map/#installing-tools)), the
 following commands build these files:
 
-    curl "http://www.nacis.org/naturalearth/50m/physical/ne_50m_coastline.zip" -o ne_50m_coastline.zip
-    curl "http://www.nacis.org/naturalearth/50m/physical/ne_50m_lakes.zip" -o ne_50m_lakes.zip
-    curl "http://www.nacis.org/naturalearth/110m/physical/ne_110m_coastline.zip" -o ne_110m_coastline.zip
-    curl "http://www.nacis.org/naturalearth/110m/physical/ne_110m_lakes.zip" -o ne_110m_lakes.zip
+    curl "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_coastline.zip"
+    curl "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip"
+    curl "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_coastline.zip"
+    curl "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_lakes.zip"
+    curl "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_boundary_lines_land.zip"
+    curl "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/cultural/ne_50m_admin_0_boundary_lines_land.zip"
     unzip -o ne_\*.zip
     ogr2ogr -f GeoJSON coastline_50m.json ne_50m_coastline.shp
     ogr2ogr -f GeoJSON coastline_110m.json ne_110m_coastline.shp
@@ -97,7 +93,9 @@ following commands build these files:
     ogr2ogr -f GeoJSON -where "scalerank < 2 AND admin='admin-0'" lakes_110m.json ne_110m_lakes.shp
     ogr2ogr -f GeoJSON -simplify 1 coastline_tiny.json ne_110m_coastline.shp
     ogr2ogr -f GeoJSON -simplify 1 -where "scalerank < 2 AND admin='admin-0'" lakes_tiny.json ne_110m_lakes.shp
-    topojson -o earth-topo.json coastline_50m.json coastline_110m.json lakes_50m.json lakes_110m.json
+    ogr2ogr -f GeoJSON boundaries_50m.json ne_50m_boundaries.shp
+    ogr2ogr -f GeoJSON boundaries_110m.json ne_110m_boundaries.shp
+    topojson -o earth-topo.json coastline_50m.json coastline_110m.json lakes_50m.json lakes_110m.json boundaries_50m.json boundaries_110m.json
     topojson -o earth-topo-mobile.json coastline_110m.json coastline_tiny.json lakes_110m.json lakes_tiny.json
     cp earth-topo*.json <earth-git-repository>/public/data/
 
